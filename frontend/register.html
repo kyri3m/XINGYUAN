@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>注册账号 - 环境监测采样派单系统</title>
+<style>
+:root{--primary:#1677ff;--bg:#f0f2f5;--card:#fff;--text:#262626;--text2:#595959;--text3:#8c8c8c;--border:#e8e8e8;--radius:8px;--shadow:0 2px 12px rgba(0,0,0,.08);--danger:#ff4d4f}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center}
+.container{width:420px;max-width:90vw}
+.header{text-align:center;margin-bottom:28px}
+.header h1{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
+.header p{font-size:14px;color:var(--text3)}
+.card{background:var(--card);border-radius:12px;padding:28px;box-shadow:var(--shadow)}
+.fg{margin-bottom:18px}.fg label{display:block;font-size:13px;color:var(--text2);margin-bottom:5px;font-weight:500}
+.fg input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;outline:none;transition:border .2s}
+.fg input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(22,119,255,.1)}
+.btn{width:100%;padding:10px;border-radius:var(--radius);font-size:15px;cursor:pointer;border:none;font-weight:500;transition:.2s}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:#4096ff}.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.err{color:var(--danger);font-size:13px;margin-bottom:12px;display:none}.err.show{display:block}
+.ok-msg{background:#f6ffed;border:1px solid #b7eb8f;border-radius:8px;padding:16px;text-align:center;display:none}
+.ok-msg.show{display:block}
+.ok-msg h3{color:#52c41a;margin-bottom:8px}.ok-msg a{color:var(--primary)}
+.footer{text-align:center;margin-top:20px;font-size:12px;color:var(--text3)}.footer a{color:var(--primary);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header"><h1>🌿 注册账号</h1><p>请输入管理员提供的注册码</p></div>
+<div class="card">
+<form id="regForm">
+<div class="fg"><label>注册码 *</label><input type="text" id="regCode" placeholder="请输入8位注册码" maxlength="8" required></div>
+<div class="fg"><label>用户名 *</label><input type="text" id="username" placeholder="设置登录用户名" autocomplete="off" minlength="2" required></div>
+<div class="fg"><label>密码 *</label><input type="password" id="password" placeholder="设置登录密码" autocomplete="new-password" minlength="4" required></div>
+<div class="err" id="errMsg"></div>
+<button type="submit" class="btn btn-primary" id="regBtn">注 册</button>
+</form>
+<div class="ok-msg" id="okMsg"><h3>✅ 注册成功！</h3><p>现在可以<a href="/login.html">前往登录</a></p></div>
+</div>
+<div class="footer">已有账号？<a href="/login.html">立即登录</a></div>
+</div>
+<script>
+document.getElementById('regForm').addEventListener('submit', async e => {
+e.preventDefault();
+const btn=document.getElementById('regBtn'),err=document.getElementById('errMsg');
+err.classList.remove('show'); btn.disabled=true; btn.textContent='注册中...';
+try{
+const res=await fetch('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({reg_code:document.getElementById('regCode').value.trim().toUpperCase(),
+username:document.getElementById('username').value,password:document.getElementById('password').value})});
+const data=await res.json();
+if(!res.ok) throw new Error(data.detail||'注册失败');
+document.getElementById('regForm').style.display='none';
+document.getElementById('okMsg').classList.add('show');
+}catch(ex){err.textContent=ex.message;err.classList.add('show')}
+finally{btn.disabled=false;btn.textContent='注 册'}
+});
+</script>
+</body>
+</html>
