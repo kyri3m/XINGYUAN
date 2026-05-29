@@ -162,25 +162,9 @@ tr:hover{background:#fafafa}
 // ==================== DATA LAYER ====================
 const DB_KEY = 'dispatch_db_v2';
 
-const defaultPersonnel = [
-  '戴吉摇','李磊','苏骏飞','齐胜男','郭继凡','孙卫文','徐成','祝建','黎健','陈硕',
-  '孙耀辉','程跃','江涛','何子龙','陈向浩','史文侯','胡文龙','杨建东','何子昂','万翔','孟祥泽','赵阿康'
-].map((name,i)=>({id:'P'+(i+1),name,phone:'',role:i<4?'组长':'组员',status:'active'}));
+const defaultPersonnel = [];
 
-const defaultCompanies = [
-  {id:'C1',name:'安徽美程化工有限公司',region:'滁州定远',contact:'聂亚多',phone:'18756419562',epaAccount:'',onlineAccount:''},
-  {id:'C2',name:'滁州东涂化学新材料科技有限公司',region:'滁州定远',contact:'郑严',phone:'18019811106',epaAccount:'',onlineAccount:''},
-  {id:'C3',name:'安徽泉盛化工有限公司',region:'滁州定远',contact:'常雪峰',phone:'13956759881',epaAccount:'',onlineAccount:''},
-  {id:'C4',name:'安徽华塑股份有限公司',region:'滁州定远',contact:'邵保成',phone:'15756056766',epaAccount:'hwasu2012',onlineAccount:'hsgf'},
-  {id:'C5',name:'安徽华尔泰化工股份有限公司',region:'池州',contact:'张燕',phone:'18226967898',epaAccount:'',onlineAccount:''},
-  {id:'C6',name:'安徽口子酒业股份有限公司东山厂区',region:'淮北',contact:'唐新村',phone:'13195618285',epaAccount:'anhuikouzijiuye2',onlineAccount:''},
-  {id:'C7',name:'绿十字（中国）生物制品有限公司',region:'淮南',contact:'杨晨',phone:'17352953308',epaAccount:'',onlineAccount:''},
-  {id:'C8',name:'安徽古井贡酒股份有限公司',region:'亳州',contact:'孙祥',phone:'15055817698',epaAccount:'',onlineAccount:''},
-  {id:'C9',name:'安徽六国化工股份有限公司',region:'铜陵',contact:'吴杰',phone:'18056219600',epaAccount:'',onlineAccount:''},
-  {id:'C10',name:'安徽省庐峰镀锌有限公司',region:'合肥',contact:'汪大胜',phone:'18055155335',epaAccount:'',onlineAccount:''},
-  {id:'C11',name:'安徽金安不锈钢铸造有限公司',region:'六安',contact:'陈思源',phone:'13515608203',epaAccount:'',onlineAccount:''},
-  {id:'C12',name:'安徽阳城化工科技有限公司',region:'滁州定远',contact:'范家奎',phone:'18355058960',epaAccount:'',onlineAccount:''},
-];
+const defaultCompanies = [];
 
 const ds = ['2026-06-01','2026-06-02','2026-06-03','2026-06-04','2026-06-05','2026-06-06','2026-06-07',
   '2026-06-08','2026-06-09','2026-06-10','2026-06-11','2026-06-12','2026-06-13','2026-06-14'];
@@ -195,7 +179,7 @@ const initDB = {
   tasks: defaultTasks,
   samplingRecords: defaultSamplingRecords,
   currentUser: {id:'P0',name:'管理员',role:'admin'},
-  nextIds: {task:1,company:13,personnel:23,sampling:1}
+  nextIds: {task:1,company:1,personnel:1,sampling:1}
 };
 
 function loadDB(){try{const d=localStorage.getItem(DB_KEY);return d?JSON.parse(d):JSON.parse(JSON.stringify(initDB))}catch(e){return JSON.parse(JSON.stringify(initDB))}}
