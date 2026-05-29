@@ -185,33 +185,9 @@ const defaultCompanies = [
 const ds = ['2026-06-01','2026-06-02','2026-06-03','2026-06-04','2026-06-05','2026-06-06','2026-06-07',
   '2026-06-08','2026-06-09','2026-06-10','2026-06-11','2026-06-12','2026-06-13','2026-06-14'];
 
-const defaultTasks = [
-  {id:'T1',pid:'XYXM20260519002',dateStart:'2026-06-01',dateEnd:'2026-06-02',company:'C1',leader:'P1,P2',members:'P3,P4',
-    types:'废气,噪声',plannedHrs:22,actualHrs:null,status:'pending',note:''},
-  {id:'T2',pid:'XYXM20260501154',dateStart:'2026-06-03',dateEnd:'2026-06-03',company:'C2',leader:'P1',members:'P3',
-    types:'废气,废水',plannedHrs:5,actualHrs:null,status:'pending',note:''},
-  {id:'T3',pid:'XYXM20260601083',dateStart:'2026-06-04',dateEnd:'2026-06-05',company:'C3',leader:'P1,P5',members:'P3,P6',
-    types:'废气,废水',plannedHrs:14,actualHrs:null,status:'pending',note:'无组织废气不做，其余完成'},
-  {id:'T4',pid:'XYXM20260601027',dateStart:'2026-06-03',dateEnd:'2026-06-05',company:'C4',leader:'P2',members:'P4',
-    types:'废气,废水',plannedHrs:4,actualHrs:null,status:'progress',note:''},
-  {id:'T5',pid:'XYXM20260601094',dateStart:'2026-06-01',dateEnd:'2026-06-02',company:'C5',leader:'P9,P10',members:'P11,P12',
-    types:'废气比对',plannedHrs:6,actualHrs:null,status:'pending',note:''},
-  {id:'T6',pid:'XYXM20260601005',dateStart:'2026-06-01',dateEnd:'2026-06-03',company:'C7',leader:'P5',members:'P6',
-    types:'废水比对',plannedHrs:4,actualHrs:null,status:'progress',note:'企业雨水如无流动水，现场取消'},
-  {id:'T7',pid:'XYXM20260601039',dateStart:'2026-06-01',dateEnd:'2026-06-06',company:'C8',leader:'P7',members:'P8',
-    types:'废水比对',plannedHrs:4,actualHrs:null,status:'pending',note:''},
-  {id:'T8',pid:'XYXM20260601002',dateStart:'2026-06-01',dateEnd:'2026-06-01',company:'C12',leader:'P9',members:'P10',
-    types:'废气,噪声',plannedHrs:5,actualHrs:5,status:'done',note:'3号完成有组织及无组织臭气浓度项目'},
-  {id:'T9',pid:'XYXM20260601143',dateStart:'2026-06-01',dateEnd:'2026-06-01',company:'C9',leader:'P17',members:'P19',
-    types:'废气,废水,地表水',plannedHrs:2,actualHrs:null,status:'pending',note:'黑度采样1次'},
-  {id:'T10',pid:'XYXM20260601091',dateStart:'2026-06-01',dateEnd:'2026-06-01',company:'C10',leader:'P11',members:'P12',
-    types:'废气',plannedHrs:12.5,actualHrs:null,status:'pending',note:''},
-];
+const defaultTasks = [];
 
-const defaultSamplingRecords = [
-  {id:'S1',taskId:'T8',date:'2026-06-01',sampler:'孙耀辉',items:'颗粒物,氮氧化物',photos:{entry:true,exit:true,sample:true,record:true},
-    gps:{lat:31.5563,lng:118.4952},device:'3012H-05',note:'',createdAt:'2026-06-01T10:30:00'},
-];
+const defaultSamplingRecords = [];
 
 const initDB = {
   personnel: defaultPersonnel,
@@ -219,7 +195,7 @@ const initDB = {
   tasks: defaultTasks,
   samplingRecords: defaultSamplingRecords,
   currentUser: {id:'P0',name:'管理员',role:'admin'},
-  nextIds: {task:11,company:13,personnel:23,sampling:2}
+  nextIds: {task:1,company:13,personnel:23,sampling:1}
 };
 
 function loadDB(){try{const d=localStorage.getItem(DB_KEY);return d?JSON.parse(d):JSON.parse(JSON.stringify(initDB))}catch(e){return JSON.parse(JSON.stringify(initDB))}}
