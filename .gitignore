@@ -1,6 +1,15 @@
+.venv/
 __pycache__/
 *.pyc
 *.db
-venv/
+data/
+*.log
+.pytest_cache/
+source.zip
+upstream/
+
 .env
-.hermes/
+.env.*
+!.env.example
+*.db-*
+scripts/qa_live.py

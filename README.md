@@ -1,161 +1,91 @@
-# 🌿 环境监测采样派单系统
+# 星源 · 环境监测协作平台
 
-环境监测采样派单管理系统 — 用于管理环境检测任务的录入、派单、人员调度与进度跟踪。
+环境监测任务录入、派单、人员协作和采样记录管理系统。新版采用模块化 FastAPI 后端和原生 ES Modules 前端，支持中文桌面与移动布局。
 
-## 技术栈
+## 本机访问
 
-| 层 | 技术 |
-|---|------|
-| 后端 | Python 3.13 + FastAPI + SQLAlchemy + SQLite |
-| 前端 | 原生 JS SPA（单页应用），hash 路由 |
-| 认证 | JWT（Bearer Token）+ 细粒度权限控制 |
-| 部署 | systemd + uvicorn，端口 8080 |
+- 地址：http://127.0.0.1:8080
+- 初始账号：`admin`
+- 初始密码：`admin123`
+- 登录后点击右上角盾牌按钮修改密码。
+- 首次启动只创建管理员。业务数据为空，可先添加采样人员，再创建任务和派单。
+
+## 启动与停止（Windows PowerShell）
+
+在项目根目录执行：
+
+```powershell
+./start.ps1
+./stop.ps1
+```
+
+启动脚本使用项目 `.venv`，在后台启动服务，检查健康状态并保存进程记录。仅监听本机回环地址，不开放局域网或公网访问；没有设置开机自启。
+
+前台启动：
+
+```powershell
+./.venv/Scripts/python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8080
+```
+
+在另一台电脑首次安装（Python 3.12+）：
+
+```powershell
+python -m venv .venv
+./.venv/Scripts/python.exe -m pip install -r requirements.txt
+./start.ps1
+```
+
+前端无需安装 npm 依赖或编译。HTML、CSS 与 JavaScript 由后端同源提供。
 
 ## 功能
 
-### 工作台
-- 月度/季度/年度待派单统计卡片
-- 今日任务（按采样组长分组）
-- 本周任务概览（未完成/已完成/异常）
-- 本月日历（标注节假日、调休、周末）
+- 工作台：实时统计、日期任务、异常关注、完成率与团队负载。
+- 任务管理：增删改查、状态/关键词/地区/有效期筛选、分页、CSV 导出。
+- 派单：多组长和组员安排、月历、改派、日期及人员冲突检查。
+- 采样：点位记录、现场说明、完成/异常/取消及实际工时。
+- 人员：组长与组员绑定、注册码邀请、资料编辑、关联数据保护。
+- 账号：角色模板、细粒度权限、账号停用、密码修改和越权保护。
+- 安全：任务归属精确判定、输入校验、随机 JWT 密钥、动态文本转义。
 
-### 任务管理
-- 新建/编辑/删除任务
-- 项目类别：自行检测、委托检测、比对监测、验收检测
-- 有效期：月度/季度/半年度/年度/组合（如月度+季度）
-- 安徽省 16 市全部区县两级联动选择
-- 检测类别：有组织排放、无组织排放、废(雨)水、地下水、噪声、土壤
-- 筛选：状态、地区、有效期、搜索
+## 架构
 
-### 派单计划
-- 按月日历视图，按组长分组展示任务
-- 自动定位到当前周
-- 节假日/调休标注（数据源：[timor.tech](https://timor.tech/api/holiday/year/)）
-- 工作日统计：工作日/周末/节假日
-- 管理员可取消派单、改派任务
-
-### 人员管理
-- 添加/编辑/删除人员
-- 组长-组员绑定（采样组员归属采样组长）
-- 自动生成注册码（一键复制注册链接）
-- 重置注册码
-
-### 用户管理
-- 管理员分权限创建用户
-- 角色模板：系统管理员、现场部部长、采样组长、采样组员、报告部负责人、实验部负责人
-- 细粒度权限控制（`admin_panel`、`manage_users`、`manage_tasks` 等）
-
-## 快速开始
-
-### 环境要求
-
-- Python 3.10+
-- pip
-
-### 安装
-
-```bash
-# 克隆仓库
-git clone https://github.com/kyri3m/XINGYUAN.git
-cd XINGYUAN
-
-# 创建虚拟环境
-python3 -m venv venv
-source venv/bin/activate  # Linux/Mac
-# venv\Scripts\activate   # Windows
-
-# 安装依赖
-pip install fastapi uvicorn sqlalchemy pyjwt passlib bcrypt python-multipart
-
-# 启动服务
-cd backend
-python -m uvicorn main:app --host 0.0.0.0 --port 8080
+```text
+backend/
+  main.py           应用入口、静态资源、健康检查
+  config.py         路径、数据库 URL、JWT 密钥
+  database.py       会话与 SQLAlchemy Base
+  permissions.py    权限词表与角色模板
+  models.py         兼容原数据库的领域模型
+  schemas.py        请求及响应模型
+  services.py       任务授权与业务校验
+  api.py            路由组合
+  routes/           认证、用户、人员、任务、采样、统计
+frontend/
+  index.html        应用入口
+  styles.css        设计变量、组件、响应式布局
+  js/api.js         API 请求与会话
+  js/ui.js          转义、图标、表单与对话框
+  js/views.js       工作台、表格、日历与管理视图
+  js/forms.js       任务、派单、采样、人员、用户操作
+  js/app.js         状态、路由和事件编排
+  js/regions.js     原仓库安徽地区数据
 ```
 
-### 默认管理员
+## 数据与配置
 
-- 用户名：`admin`
-- 密码：`admin123`
+数据库默认位于 `backend/dispatch.db`；原表结构保留。运行数据、随机密钥和服务日志位于 `data/`。备份时停止服务，复制数据库及 `data/.jwt-secret`。删除密钥文件将使已有会话失效。
 
-> ⚠️ 首次启动自动创建管理员账号。请登录后立即修改密码。
+可通过环境变量覆盖 `DATABASE_URL`、`JWT_SECRET`、`ADMIN_PASSWORD`；见 `.env.example`。`ADMIN_PASSWORD` 只在首次创建管理员时使用，不会覆盖已有密码。
 
-### systemd 部署（Linux）
+## 验证
 
-```bash
-# 复制服务文件
-sudo cp dispatch.service /etc/systemd/system/
-
-# 启动并设置开机自启
-sudo systemctl daemon-reload
-sudo systemctl enable dispatch
-sudo systemctl start dispatch
-
-# 查看状态
-sudo systemctl status dispatch
+```powershell
+./.venv/Scripts/python.exe -m pytest -q
+node tests/ui.mjs
 ```
 
-## 项目结构
+API 测试使用独立内存数据库，不会写入本地业务数据。接口文档：http://127.0.0.1:8080/docs 。健康检查：`GET /api/health`。
 
-```
-├── backend/
-│   ├── main.py          # FastAPI 入口 + 静态文件服务
-│   ├── models.py        # SQLAlchemy 数据模型
-│   ├── api.py           # REST API 路由
-│   ├── auth.py          # JWT 认证 + 权限装饰器
-│   └── schemas.py       # Pydantic 校验模型
-├── frontend/
-│   ├── index.html       # SPA 主页面（管理端）
-│   ├── app5.js          # 前端核心逻辑
-│   ├── login2.html      # 登录页
-│   └── register.html    # 注册页
-├── dispatch.service     # systemd 服务配置
-├── README.md
-└── .gitignore
-```
+审阅结果、修复项、验证范围与已知边界见 [REVIEW.md](REVIEW.md)。本地上游源码快照、运行数据及密钥不纳入版本控制。
 
-## API 概览
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| POST | `/api/auth/login` | 登录获取 JWT |
-| POST | `/api/auth/register` | 注册新用户 |
-| GET | `/api/dashboard` | 工作台数据 |
-| GET/POST | `/api/tasks` | 任务列表 / 新建 |
-| PUT/DELETE | `/api/tasks/{id}` | 编辑 / 删除任务 |
-| GET/POST | `/api/personnel` | 人员列表 / 添加 |
-| PUT/DELETE | `/api/personnel/{id}` | 编辑 / 删除人员 |
-| POST | `/api/personnel/{id}/regenerate-code` | 重置注册码 |
-| GET | `/api/users` | 用户列表 |
-| GET | `/api/meta/permissions` | 权限元数据 |
-
-全部 API 需 `Authorization: Bearer <token>` 头部。
-
-## 权限系统
-
-| 权限键 | 说明 |
-|--------|------|
-| `admin_panel` | 进入管理端 |
-| `manage_users` | 管理用户 |
-| `manage_tasks` | 管理任务 |
-| `view_all_tasks` | 查看全部任务 |
-| `view_dispatch` | 查看派单计划 |
-| `manage_personnel` | 管理人员 |
-| `do_sampling` | 执行采样 |
-| `manage_reports` | 管理报告 |
-| `manage_lab` | 管理实验室 |
-
-## 数据库
-
-默认使用 SQLite（`backend/dispatch.db`），切换 MySQL 只需修改 `backend/models.py` 中的 `DATABASE_URL`：
-
-```python
-DATABASE_URL = "mysql+pymysql://user:password@localhost/dispatch"
-```
-
-## 地区数据
-
-安徽省 16 市及全部区县，支持市→区县两级联动下拉选择。
-
-## License
-
-MIT
+完整验收测试结果（26 项后端测试、12 项前端逻辑检查及真实页面操作）见 [TEST-REPORT.md](TEST-REPORT.md)。

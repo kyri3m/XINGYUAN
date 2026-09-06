@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from .models import get_db, User
 import os
 
-SECRET_KEY = os.environ.get("JWT_SECRET", "dispatch-system-change-me-in-prod")
+from .config import SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
 
@@ -20,10 +20,13 @@ security = HTTPBearer()
 
 
 def hash_password(password: str) -> str:
+    if len(password.encode('utf-8')) > 72:
+        raise HTTPException(422, '密码不能超过 72 字节')
     return pwd_context.hash(password)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
+    if len(plain.encode('utf-8')) > 72: return False
     return pwd_context.verify(plain, hashed)
 
 
