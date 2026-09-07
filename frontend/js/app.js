@@ -1,13 +1,15 @@
+import {mountAmbient} from './ambient.js?v=3.0.0';
 import {api,session} from './api.js';
 import {esc,icon,field,toast,dateKey} from './ui.js';
-import {brand,landscape,shell,routeMeta,dashboard,tasksView,calendar,peopleView,usersView,filteredTasks} from './views.js?v=2.2.0';
-import {createActions} from './forms.js?v=2.2.0';
+import {brand,landscape,shell,routeMeta,dashboard,tasksView,calendar,peopleView,usersView,filteredTasks} from './views.js?v=3.0.0';
+import {createActions} from './forms.js?v=3.0.0';
 const state={user:null,tasks:[],people:[],users:[],meta:{roles:[],permissions:[],templates:{}},route:'dashboard',month:new Date(),selectedDate:dateKey(new Date()),dashTab:'today',page:1,filter:{status:'',search:'',district:'',period:''}};
 const can=permission=>state.user?.role==='admin'||!!state.user?.permissions?.[permission];
 const actions=createActions(state,can,refresh);
 function login(register=location.pathname.startsWith('/register')) {
  document.querySelector('#dialog').close();
- document.querySelector('#app').innerHTML=`<div class="login-page"><section class="login-story">${brand}<div><h1>每一次采样，<br>都有清晰的安排。</h1><p>连接任务、团队与现场<br>让环境监测工作，在一个空间内有序开展。</p></div>${landscape}<footer>XINGYUAN · 环境监测采样协作平台</footer></section><form class="login-form"><h2>${register?'加入采样团队':'欢迎回来'}</h2><p>${register?'使用管理员提供的注册码创建账号。':'登录工作空间，开始今天的监测工作。'}</p>${register?field('reg_code','注册码',new URLSearchParams(location.search).get('code')||'','text','required minlength="6"'):''}${field('username','用户名',register?'':'admin','text','required autocomplete="username"')}${field('password','密码','','password','required autocomplete="'+(register?'new-password':'current-password')+'" minlength="4"')}<button class="button primary" type="submit">${register?'创建账号':'登录工作空间'} ${icon('arrow',16)}</button><div class="form-error" style="padding:15px 0" role="alert"></div><div class="login-hint">${register?'<a href="/login">已有账号？返回登录</a>':'首次使用？<a href="/register">使用注册码加入</a>'}<br>星源 · 让每一次监测更有价值</div></form></div>`;
+ document.querySelector('#app').innerHTML=`<div class="login-page"><section class="login-story">${brand}<div class="login-manifesto"><h1>现场有序，<br>协作有光。</h1><p>连接任务、团队与现场<br>让环境监测工作，在一个空间内有序开展。</p></div><canvas data-ambient aria-hidden="true"></canvas><footer>XINGYUAN · 环境监测采样协作平台</footer></section><form class="login-form"><h2>${register?'加入采样团队':'欢迎回来'}</h2><p>${register?'使用管理员提供的注册码创建账号。':'登录工作空间，开始今天的监测工作。'}</p>${register?field('reg_code','注册码',new URLSearchParams(location.search).get('code')||'','text','required minlength="6"'):''}${field('username','用户名',register?'':'admin','text','required autocomplete="username"')}${field('password','密码','','password','required autocomplete="'+(register?'new-password':'current-password')+'" minlength="4"')}<button class="button primary" type="submit">${register?'创建账号':'登录工作空间'} ${icon('arrow',16)}</button><div class="form-error" style="padding:15px 0" role="alert"></div><div class="login-hint">${register?'<a href="/login">已有账号？返回登录</a>':'首次使用？<a href="/register">使用注册码加入</a>'}<br>星源 · 让每一次监测更有价值</div></form></div>`;
+ mountAmbient();
  document.querySelector('.login-form').onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;const data=Object.fromEntries(new FormData(e.target));try{if(register){await api('/auth/register','POST',data);toast('注册成功，请登录');login(false);}else{const result=await api('/auth/login','POST',data);session.set(result.access_token);await boot();}}catch(error){document.querySelector('.login-form .form-error').textContent=error.message;}finally{b.disabled=false;}};
 }
 async function refresh() {
@@ -26,6 +28,7 @@ function render(){
 function renderPage(){
  const views={dashboard:()=>dashboard(state),tasks:()=>tasksView(state),dispatch:()=>calendar(state,true),personnel:()=>peopleView(state,can),users:()=>usersView(state)};
  document.querySelector('#page').innerHTML=views[state.route]();
+ mountAmbient();
  const search=document.querySelector('#task-search');if(search)search.oninput=e=>{state.filter.search=e.target.value;state.page=1;const pos=e.target.selectionStart;renderPage();const input=document.querySelector('#task-search');input.focus();input.setSelectionRange(pos,pos);};
  for(const [id,key] of [['district-filter','district'],['period-filter','period']]){const node=document.getElementById(id);if(node)node.onchange=()=>{state.filter[key]=node.value;state.page=1;renderPage();};}
 }

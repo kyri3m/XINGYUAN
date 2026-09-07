@@ -8,6 +8,8 @@ export function toast(message) { const node = document.querySelector('#toast'); 
 export function modal(title, content, onSubmit, submitLabel = '保存') {
   const dialog = document.querySelector('#dialog');
   if(dialog.open) dialog.close();
+  dialog.classList.toggle('detail-drawer', title==='任务详情');
+  dialog.setAttribute('aria-label',title);
   dialog.innerHTML = `<form id="modal-form"><header><div><h2>${esc(title)}</h2></div><button type="button" class="icon-button" data-close aria-label="关闭">${icon('close')}</button></header><div class="modal-content">${content}</div>${onSubmit ? '<footer><button type="button" class="button" data-close>取消</button><button class="button primary" type="submit">保存</button></footer>' : ''}<p class="form-error" role="alert"></p></form>`;
   dialog.querySelectorAll('[data-close]').forEach(b => b.onclick = () => dialog.close());
   dialog.onclick = e => {if (e.target === dialog) dialog.close();};
